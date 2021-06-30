@@ -22,7 +22,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:1234@162.222.180.69/recomm
    
 db.init_app(app)
 login_manager = LoginManager()
-login_manager.login_view = 'auth.login'
+login_manager.login_view = 'login'
 login_manager.init_app(app)
 
 from flask_login import UserMixin
@@ -59,11 +59,13 @@ def signup_post():
 
     if user: # if a user is found, we want to redirect back to signup page so user can try again
         flash('Email address already exists')
-        return redirect(url_for('auth.signup'))
-
+        return redirect(url_for('signup'))
+    result=db.engine.execute(f'SELECT *  from user as U order by CAST(U.userId AS UNSIGNED) desc limit 1')
+    userid=[row for row in result]
+    print(int(userid[0][0])+1)
     # create a new user with the form data. Hash the password so the plaintext version isn't saved.
-    new_user = User(Email=email, userName=name, Password=password)
-
+    new_user = User(Email=email, userName=name, Password=password, userId=int(userid[0][0])+1)
+    print(new_user)
     # add the new user to the database
     db.session.add(new_user)
     db.session.commit()
@@ -81,7 +83,7 @@ def login_post():
     print(password,user.Password,type(user.Password),type(password),str(user.Password).strip()==str(password).strip())
     # check if the user actually exists
     # take the user-supplied password, hash it, and compare it to the hashed password in the database
-  
+    
     if not user or not user.Password.strip()==password.strip():
         flash('Please check your login details and try again.')
         return redirect(url_for('login')) # if the user doesn't exist or password is wrong, reload the page
@@ -116,18 +118,27 @@ def index():
 @login_required
 def profile():
     # print(f'SELECT * FROM recommendationSystem.RATINGS join MOVIES on userId={current_user.userId} where {current_user.userId}=userId;')
-    result = db.engine.execute(f'select * from RATINGS as rt JOIN MOVIES on rt.userId={current_user.userId} where {current_user.userId}=rt.userId')
-    print(result)
-    names = [row[0] for row in result]
+    result = db.engine.execute(f'SELECT M.genre,M.title,R.rating FROM MOVIES M  INNER JOIN RATINGS R ON M.ID  = R.movieId INNER JOIN user U on U.userId = R.userId  where U.userId = {current_user.userId} ORDER BY R.rating desc LIMIT 10')
+    print(f'SELECT U.userName,M.title,R.rating FROM MOVIES M  INNER JOIN RATINGS R ON M.ID  = R.movieId INNER JOIN user U on U.userId = R.userId  where U.userId = {current_user.userId} ORDER BY R.rating desc')
+    names = [row for row in result]
     print(names)
-    return render_template('profile.html',name=current_user.userName)
+    result2=db.engine.execute(f'SELECT distinct(title),id FROM recommendationSystem.MOVIES ;')
+    movie=[row for row in result2]
+    return render_template('profile.html',user=current_user,recommendation=names, movies=movie)
 
 @app.route('/_add_numbers')
 def add_numbers():
     a = request.args.get('a', '',)
+    id = request.args.get('id', '',)
+    user = request.args.get('user', '',)
     print(a)
-    result=    predict(a)
-    print(result)    
+    print(id)
+    print(user)
+    result2=db.engine.execute(f'insert RATINGS values ({user},{id},{a});')
+    # print("received")
+    # result=    predict(a)
+    # print(result)    
+    result="success"
     return jsonify(result)
 
 
