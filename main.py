@@ -62,7 +62,7 @@ def signup_post():
         return redirect(url_for('signup'))
     result=db.engine.execute(f'SELECT *  from user as U order by CAST(U.userId AS UNSIGNED) desc limit 1')
     userid=[row for row in result]
-    print(int(userid[0][0])+1)
+    # print(int(userid[0][0])+1)
     # create a new user with the form data. Hash the password so the plaintext version isn't saved.
     new_user = User(Email=email, userName=name, Password=password, userId=int(userid[0][0])+1)
     print(new_user)
@@ -149,6 +149,6 @@ if __name__ == '__main__':
     @login_manager.user_loader
     def load_user(user_id):
         # since the user_id is just the primary key of our user table, use it in the query for the user
-        return User.query.get(int(user_id))
+        return User.query.get(user_id)
     # run the Flask RESTful API, make the server publicly available (host='0.0.0.0') on port 8080
     app.run(host='0.0.0.0', port=8080, debug=True)
