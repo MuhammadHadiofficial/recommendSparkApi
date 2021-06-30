@@ -118,7 +118,7 @@ def index():
 @login_required
 def profile():
     # print(f'SELECT * FROM recommendationSystem.RATINGS join MOVIES on userId={current_user.userId} where {current_user.userId}=userId;')
-    result = db.engine.execute(f'SELECT M.genre,M.title,R.rating FROM MOVIES M  INNER JOIN RATINGS R ON M.ID  = R.movieId INNER JOIN user U on U.userId = R.userId  where U.userId = {current_user.userId} ORDER BY R.rating desc LIMIT 10')
+    result = db.engine.execute(f'SELECT M.genre,M.title,R.prediction FROM MOVIES M  INNER JOIN RECOMMENDATIONS R ON M.ID  = R.movieId INNER JOIN user U on U.userId = R.userId  where U.userId = {current_user.userId} ORDER BY R.prediction desc LIMIT 10')
     print(f'SELECT U.userName,M.title,R.rating FROM MOVIES M  INNER JOIN RATINGS R ON M.ID  = R.movieId INNER JOIN user U on U.userId = R.userId  where U.userId = {current_user.userId} ORDER BY R.rating desc')
     names = [row for row in result]
     print(names)
