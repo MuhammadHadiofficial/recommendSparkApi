@@ -30,7 +30,7 @@ def index():
 @main.route('/dashboard')
 @login_required
 def profile():
-    print(f'SELECT * FROM recommendationSystem.RATINGS join MOVIES on userId={current_user.userId} where {current_user.userId}=userId;')
+    # print(f'SELECT * FROM recommendationSystem.RATINGS join MOVIES on userId={current_user.userId} where {current_user.userId}=userId;')
     result = db.engine.execute(f'select * from RATINGS as rt JOIN MOVIES on rt.userId={current_user.userId} where {current_user.userId}=rt.userId')
     print(result)
     names = [row[0] for row in result]
