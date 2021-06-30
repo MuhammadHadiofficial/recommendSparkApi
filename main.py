@@ -46,7 +46,7 @@ def signup():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('main.index'))
+    return redirect(url_for('index'))
 
 @app.route('/signup', methods=['POST'])
 def signup_post():
@@ -67,7 +67,7 @@ def signup_post():
     # add the new user to the database
     db.session.add(new_user)
     db.session.commit()
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('login'))
 
 @app.route('/login', methods=['POST'])
 def login_post():
@@ -84,10 +84,10 @@ def login_post():
   
     if not user or not user.Password.strip()==password.strip():
         flash('Please check your login details and try again.')
-        return redirect(url_for('auth.login')) # if the user doesn't exist or password is wrong, reload the page
+        return redirect(url_for('login')) # if the user doesn't exist or password is wrong, reload the page
     login_user(user, remember=remember)
     # if the above check passes, then we know the user has the right credentials
-    return redirect(url_for('main.profile'))
+    return redirect(url_for('profile'))
 
 
 
