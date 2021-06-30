@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .background {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
+}
+</style>
+<div class="column is-4 is-offset-4">
+    <h3 class="title">Login</h3>
+    <div class="box">
+        {% with messages = get_flashed_messages() %}
+{% if messages %}
+    <div class="notification is-danger">
+        {{ messages[0] }}
+    </div>
+{% endif %}
+{% endwith %}
+        <form method="POST" action="/login">
+            <div class="field">
+                <div class="control has-icons-left has-icons-right">
+                    <input class="input is-large" type="email" name="email" placeholder="Your Email" autofocus="">
+                    
+                <span class="icon is-small is-left">
+                    <i class="fas fa-user"></i>
+                  </span>
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control has-icons-left has-icons-right">
+                    <input class="input is-large" type="password" name="password" placeholder="Your Password">
+              
+                <span class="icon is-small is-left">
+                    <i class="fas fa-key"></i>
+                  </span>
+                </div>
+            </div>
+            <div class="field">
+                <label class="checkbox">
+                    <input type="checkbox">
+                    Remember me
+                </label>
+            </div>
+            <button class="button is-block is-info is-large is-fullwidth">Login</button>
+        </form>
+         
+
+    </div>
+</div>
+<canvas class=
+"background"
+></canvas>
+<script>
+    window.
+onload
+= function() {
+    console.log("Start")
+  Particles.
+init
+({
+    selector: 
+'.background', color: ['#DA0463', '#404B69', '#DBEDF3'],
+  connectParticles: true
+  });
+};
+</script>
+{% endblock %}

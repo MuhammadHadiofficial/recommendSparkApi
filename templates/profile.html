@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  
+<h1 class="title">
+  Welcome, {{name }}!
+</h1>
+<div class="box">
+  <div class="field">
+    <div id="search-box" class="control is-large ">
+      <textarea name="a" class="textarea is-large" placeholder="Enter Your Text Here"></textarea>
+    </div>
+</div>
+<div class="container">
+  <button id=calculate class="button is-warning is-large ">Predict</button>
+</div>
+
+</div>
+<div id="result-container" style="display:none" class="container">
+  
+    <div class="columns">
+      <div class="column">
+        <span id="icons" style="font-size:20px" class="icon">
+  
+        </span>
+      </div>
+      <div class="column">
+        <span id="time" class="time">
+  
+        </span>
+      </div>
+    
+  </div>
+
+
+    <div id="show_chart" class="columns">
+    <div class="column" style="width: 50%">
+      <canvas id="myChart" width="200" height="200"></canvas>
+    </div> <div class="column" style="width: 50%">
+      <canvas id="myChart2" width="200" height="200"></canvas>
+    </div>
+  </div>
+
+</div>
+<script type=text/javascript>
+  $(function() {
+    $('button#calculate').bind('click', function() {
+      const searchLoader=$('#search-box').addClass('is-loading')
+      $('#result-container').css('display','none')
+      $.getJSON($SCRIPT_ROOT + '/_add_numbers', {
+        a: $('textarea[name="a"]').val(),
+      }, function(response) {
+        var flag=false;
+        $('#show_chart').css('display','none')
+        if(response.label==='POSITIVE'){
+          
+          flag=true;
+          $('#show_chart').css('display','')
+          percentage_array=[response.score,1-response.score]
+          $('#icons').html(`        <i class="fas fa-smile"></i><p>${response.label}</p>`)
+          $('#time').html(`       <p>${response.elapsed_time} ms`)
+        }else if(response.label==='NEGATIVE'){
+          flag=true;
+          $('#show_chart').css('display','')
+          $('#icons').html(`        <i class="fas fa-home"></i><p>${response.label}</p>`)
+          $('#time').html(`       <p>${response.elapsed_time} ms`)
+          percentage_array=[response.score,1-response.score]
+        }else{
+          $('#icons').html(`        <i class="fas fa-check"></i><p>${response.label}</p>`)
+          $('#time').html(`       <p>${response.elapsed_time} ms`)
+        
+        }
+        console.log(flag)
+        if(flag){
+      
+          if(window.myChart instanceof Chart){
+    window.myChart.destroy();
+}
+if(window.myBarChart instanceof Chart){
+    window.myBarChart.destroy();
+}
+        var ctx = document.getElementById("myChart");
+        console.log(ctx)
+  var ctx = document.getElementById("myChart").getContext("2d");
+  
+  var ctx = $("#myChart");
+  var ctx = "myChart";
+  var ctx = document.getElementById("myChart");
+  window.myChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: ["Positive", "Negative", ],
+      datasets: [
+        {
+          label: "# Sentiment Score",
+          data:           percentage_array,
+          backgroundColor: [
+            "rgba(255, 99, 132, 0.2)",
+            "rgba(54, 162, 235, 0.2)",
+            "rgba(255, 206, 86, 0.2)",
+            "rgba(75, 192, 192, 0.2)",
+            "rgba(153, 102, 255, 0.2)",
+            "rgba(255, 159, 64, 0.2)",
+          ],
+          borderColor: [
+            "rgba(255, 99, 132, 1)",
+            "rgba(54, 162, 235, 1)",
+            "rgba(255, 206, 86, 1)",
+            "rgba(75, 192, 192, 1)",
+            "rgba(153, 102, 255, 1)",
+            "rgba(255, 159, 64, 1)",
+          ],
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+
+  var canvas = document.getElementById("myChart2");
+var ctx = canvas.getContext('2d');
+
+
+var data = {
+labels: ["Positive ", "Negative"],
+  datasets: [
+    {
+        fill: true,
+        backgroundColor: [
+        "rgba(255, 99, 132, 0.2)",
+            'rgba(153, 102, 255, 0.2)'],
+        data:  percentage_array,
+// Notice the borderColor 
+        borderColor:	['rgba(255, 159, 64, 1)', 'rgba(255, 206, 86, 1)'],
+        borderWidth: [2,2]
+    }
+]
+};
+
+// Notice the rotation from the documentation.
+
+var options = {
+    title: {
+              display: true,
+              text: 'What happens when you lend your favorite t-shirt to a girl ?',
+              position: 'top'
+          },
+    rotation: -0.7 * Math.PI
+};
+
+
+// Chart declaration:
+window.myBarChart = new Chart(ctx, {
+type: 'pie',
+data: data,
+options: options
+});
+       
+}
+        $('#result-container').css('display','block')
+        searchLoader.removeClass('is-loading')
+        // $("#result").text(response.label);
+      });
+      return false;
+    });
+  });
+  
+
+  
+</script>
+
+
+
+{% endblock %}
